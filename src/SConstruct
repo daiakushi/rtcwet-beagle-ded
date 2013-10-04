@@ -102,7 +102,7 @@ else:
 		cpu = 'ppc'
 		dll_cpu = cpu
 	else:
-		cpu = 'cpu'
+	#	cpu = 'cpu'
 		dll_cpu = cpu
 OS = commands.getoutput( 'uname -s' )
 if ( OS == 'Darwin' ):
@@ -117,8 +117,8 @@ print 'cpu: ' + cpu
 
 # default settings -------------------------------
 
-CC = 'gcc -m32'
-CXX = 'g++ -m32'
+CC = 'gcc'
+CXX = 'g++'
 JOBS = '1'
 BUILD = 'debug'
 DEDICATED = '2'
@@ -220,7 +220,7 @@ else:
 BASECPPFLAGS = [ ]
 CORECPPPATH = [ ]
 CORELIBPATH = [ ]
-CORECPPFLAGS = [ ]
+CORECPPFLAGS = [ '-DDLL_CPU=%s' % dll_cpu ]
 GAMECPPFLAGS = [ ]
 BASELINKFLAGS = [ ]
 CORELINKFLAGS = [ ]
@@ -256,7 +256,7 @@ elif ( BUILD == 'release' ):
 		# -fschedule-insns2: implicit at -O3
 		# -funroll-loops ?
 		# -mfpmath=sse -msse ?
-		OPTCPPFLAGS = [ '-O3', '-march=i686', '-Winline', '-ffast-math', '-fomit-frame-pointer', '-finline-functions', '-fschedule-insns2' ]
+		OPTCPPFLAGS = [ '-O3', '-Winline', '-ffast-math', '-fomit-frame-pointer', '-finline-functions', '-fschedule-insns2' ]
 	elif ( OS == 'Darwin' ):
 		OPTCPPFLAGS = []
 else:
@@ -339,7 +339,7 @@ if ( TARGET_CORE == '1' ):
 	if ( DEDICATED == '1' or DEDICATED == '2' ):
 		local_dedicated = 1
 		Export( 'GLOBALS ' + GLOBALS )
-		BuildDir( g_build + '/dedicated', '.', duplicate = 0 )
+		VariantDir( g_build + '/dedicated', '.', duplicate = 0 )
 		etded = SConscript( g_build + '/dedicated/SConscript.core' )
 		if ( g_os == 'win32' ):
 			toplevel_targets.append( InstallAs( '#etded.exe', etded ) )
@@ -354,13 +354,13 @@ if ( TARGET_BSPC == '1' ):
 
 if ( TARGET_GAME == '1' ):
 	Export( 'GLOBALS ' + GLOBALS )
-	BuildDir( g_build + '/game', '.', duplicate = 0 )
+	VariantDir( g_build + '/game', '.', duplicate = 0 )
 	game = SConscript( g_build + '/game/SConscript.game' )
 	toplevel_targets.append( InstallAs( '#qagame.mp.%s.so' % dll_cpu, game ) )
 
 if ( TARGET_CGAME == '1' ):
 	Export( 'GLOBALS ' + GLOBALS )
-	BuildDir( g_build + '/cgame', '.', duplicate = 0 )
+	VariantDir( g_build + '/cgame', '.', duplicate = 0 )
 	cgame = SConscript( g_build + '/cgame/SConscript.cgame' )
 	toplevel_targets.append( InstallAs( '#cgame.mp.%s.so' % dll_cpu, cgame ) )
 

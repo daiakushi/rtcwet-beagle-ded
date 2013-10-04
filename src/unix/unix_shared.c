@@ -416,7 +416,8 @@ char *Sys_DefaultHomePath( void ) {
 
 //============================================
 
-void GetClockTicks( double *t ) {
+float GetClockTicks() {
+	/*
 	unsigned long lo, hi;
 
 	__asm__ __volatile__ (
@@ -426,14 +427,34 @@ void GetClockTicks( double *t ) {
 		: : "m" ( lo ), "m" ( hi ) );
 
 	*t = (double) lo + (double) 0xFFFFFFFF * hi ;
+	*/
+
+	// shamelessly stole from http://code.google.com/p/gperftools/source/browse/src/base/cycleclock.h
+	long pmccntr;
+	long pmuseren;
+	long pmcntenset;
+	// Read the user mode perf monitor counter access permissions.
+	asm volatile ("mrc p15, 0, %0, c9, c14, 0" : "=r" (pmuseren));
+	if (pmuseren & 1) {  // Allows reading perfmon counters for user mode code.
+		asm volatile ("mrc p15, 0, %0, c9, c12, 1" : "=r" (pmcntenset));
+		if (pmcntenset & 0x80000000ul) {  // Is it counting?
+			asm volatile ("mrc p15, 0, %0, c9, c13, 0" : "=r" (pmccntr));
+			// The counter is set up to count every 64th cycle
+			return (double)(pmccntr << 6);  // Should optimize to << 6
+		}
+	}
+
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (float)((tv.tv_sec + tv.tv_usec * 0.000001) * CLOCKS_PER_SEC);
 }
 
 float Sys_GetCPUSpeed( void ) {
 	double t0, t1;
 
-	GetClockTicks( &t0 );
+	t0 = GetClockTicks();
 	sleep( 1 );
-	GetClockTicks( &t1 );
+	t1 = GetClockTicks();
 
 	return (float) ( ( t1 - t0 ) / 1000000.0 );
 }

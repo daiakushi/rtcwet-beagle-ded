@@ -711,7 +711,7 @@ char* Sys_GetDLLName( const char *name ) {
 #elif defined __mips__
 	return va( "%s.mp.mips.so", name );
 #else
-#error Unknown arch
+	return va( "%s.mp.%s.so", name, M2S(DLL_CPU) );
 #endif
 }
 
