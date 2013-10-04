@@ -150,6 +150,7 @@ linux_sources = [
         'unix/unix_main.c',
         'unix/unix_net.c',
         'unix/unix_shared.c',
+		'unix/snapvector.c',
         'game/q_shared.c',
         'game/q_math.c',
 #        'unix/matha.S'
@@ -249,18 +250,6 @@ if ( os.path.exists( os.path.join( '/usr/lib', staticx11_libs[0] ) ) ):
 else:
 	staticx11_libs = [ os.path.join( '/usr/X11R6/lib', i ) for i in staticx11_libs ]
 
-if ( g_os == 'Linux' ):
-	nasm_env = Environment( tools = [ 'nasm' ] )
-	nasm_env['ASFLAGS'] = '-f elf'
-	snapvector = nasm_env.StaticObject( 'unix/snapvector.asm' )
-
-	# gas assembly, with preprocessing
-	gas_env = Environment( tools = [ 'gcc', 'gas' ] )
-	gas_env.Append( CPPDEFINES = [ 'ELF' ] )
-	gas_env.Append( ASFLAGS = [ '-m32', '-x', 'assembler-with-cpp' ] )
-	matha = gas_env.StaticObject( 'unix/matha.spp' )
-        snd_mixa = gas_env.StaticObject( 'unix/snd_mixa.spp' )
-
 splines_env = g_env.Clone()
 splines_lib = splines_env.StaticLibrary( splines_list )
 
@@ -295,22 +284,7 @@ elif ( g_os == 'Darwin' ):
 if ( MASTER != '' ):
 	local_env.Append( CPPDEFINES = [ 'MASTER_SERVER_NAME=\\"%s\\"' % MASTER ] )
 
-source_list = server_list + qcommon_list
-if ( g_os == 'Linux' ):
-	source_list += linux_sources + snapvector + matha
-elif ( g_os == 'win32' ):
-	source_list += win32_sources
-elif ( g_os == 'Darwin' ):
-	if ( BUILD == 'release' ):
-		local_env.Append( CPPFLAGS = [ '-include', 'mac/MacPrefix.h' ] )
-	else:
-		local_env.Append( CPPFLAGS = [ '-include', 'mac/MacPrefixDebug.h' ] )
-	mac_objects = []
-	for i in mac_sources:
-		mac_objects.append( local_env.StaticObject( i ) )
-	source_list += mac_objects
-
-source_list += botlib_objs
+source_list = server_list + qcommon_list + linux_sources + botlib_objs
 
 if ( local_dedicated == 0 ):
 	source_list += jpeg_list
