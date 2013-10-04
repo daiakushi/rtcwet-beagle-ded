@@ -1314,4 +1314,7 @@ void Com_GetHunkInfo( int* hunkused, int* hunkexpected );
 
 #endif
 
+#define D2S(x)	#x
+#define M2S(x)	D2S(x)
+
 #endif // _QCOMMON_H_
