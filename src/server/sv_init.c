@@ -467,9 +467,11 @@ SV_TouchCGameDLL
 */
 void SV_TouchCGameDLL( void ) {
 	fileHandle_t f;
-	char *filename;
+//	char *filename;
+	// this is a fixed string embedded in mp_bin.pk3
+	char filename[] = "cgame.mp.i386.so";
 
-	filename = Sys_GetDLLName( "cgame" );
+//	filename = Sys_GetDLLName( "cgame" );
 	FS_FOpenFileRead_Filtered( filename, &f, qfalse, FS_EXCLUDE_DIR );
 	if ( f ) {
 		FS_FCloseFile( f );
