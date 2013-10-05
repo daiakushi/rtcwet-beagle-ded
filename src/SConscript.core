@@ -42,19 +42,6 @@ vm_interpreted.c"""
 
 qcommon_list = scons_utils.BuildList( 'qcommon', qcommon_string )
 
-splines_string = """
-math_angles.cpp
-math_matrix.cpp
-math_quaternion.cpp
-math_vector.cpp
-q_parse.cpp
-q_shared.c
-splines.cpp
-util_str.cpp"""
-
-
-splines_list = scons_utils.BuildList( 'splines', splines_string )
-
 linux_sources = [
         'unix/linux_signals.c',
         'unix/unix_main.c',
@@ -113,9 +100,6 @@ botlib_objs = []
 for i in botlib_list:
 	botlib_objs.append( botlib_env.StaticObject( os.path.join( 'botlib', i ) ) )
 
-splines_env = g_env.Clone()
-splines_lib = splines_env.StaticLibrary( splines_list )
-
 local_env = g_env.Clone()
 
 local_env.Append( LIBS = [ 'dl' ] )
@@ -131,7 +115,7 @@ else:
 if ( MASTER != '' ):
 	local_env.Append( CPPDEFINES = [ 'MASTER_SERVER_NAME=\\"%s\\"' % MASTER ] )
 
-source_list = server_list + qcommon_list + linux_sources + botlib_objs + splines_lib
+source_list = server_list + qcommon_list + linux_sources + botlib_objs
 source_list += [ 'null/null_client.c', 'null/null_input.c', 'null/null_snddma.c', 'qcommon/dl_main_stubs.c' ]
 
 ret = local_env.Program( target = 'et', source = source_list )
