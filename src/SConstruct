@@ -251,7 +251,7 @@ if ( TARGET_CORE == '1' ):
 
 if ( TARGET_BSPC == '1' ):
 	Export( 'GLOBALS ' + GLOBALS )
-	BuildDir( g_build + '/bspc', '.', duplicate = 0 )
+	VariantDir( g_build + '/bspc', '.', duplicate = 0 )
 	bspc = SConscript( g_build + '/bspc/SConscript.bspc' )
 	toplevel_targets.append( InstallAs( '#bspc.' + cpu, bspc ) )
 
